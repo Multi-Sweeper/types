@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export enum GameSessionStatus {
     LOBBY = "LOBBY",
     PLAYING = "PLAYING",
@@ -28,3 +30,9 @@ export type CellBomb = {
 };
 
 export type Cell = CellOpened | CellUnknown | CellBomb | CellFlag;
+
+export const nonceEventSchema = z.object({
+    nonce: z.string().optional(),
+});
+
+export type NonceEvent = z.infer<typeof nonceEventSchema>;

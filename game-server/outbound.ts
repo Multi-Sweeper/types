@@ -1,7 +1,7 @@
 // This file defines types for WebSocket messages that are sent from the server to the client
 // For types of WebSocket messages received by the server from the client refer to src/lib/game/server/validation.ts
 
-import { Cell, GameSessionSettings } from "./common";
+import { Cell, GameSessionSettings, NonceEvent } from "./common";
 
 // Game events
 export type BoardUpdateEvent = {
@@ -63,14 +63,14 @@ export type ServerError = {
     data: {
         message: string;
     };
-};
+} & NonceEvent;
 
 export type InvalidMessageEvent = {
     type: "invalid-message";
     data: {
         message: string;
     };
-};
+} & NonceEvent;
 
 export type ConnectEvent = {
     type: "connect";
@@ -78,33 +78,33 @@ export type ConnectEvent = {
         status: "success" | "error";
         message: string;
     };
-};
+} & NonceEvent;
 
 export type DisconnectSuccessEvent = {
     type: "disconnect-success";
     data: {
         message: string;
     };
-};
+} & NonceEvent;
 
 export type NoSessionEvent = {
     type: "no-session";
     data: {
         message: string;
     };
-};
+} & NonceEvent;
 
 export type UnknownSessionEvent = {
     type: "unknown-session";
     data: {
         message: string;
     };
-};
+} & NonceEvent;
 
 export type SessionEvent = {
     type: "session-event";
     data: SessionEventType;
-};
+} & NonceEvent;
 
 export type Event =
     | ServerError

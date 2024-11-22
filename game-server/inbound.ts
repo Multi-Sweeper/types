@@ -1,17 +1,24 @@
 // Defines structure of all valid incomming websocket messages
 
 import { z } from "zod";
+import { nonceEventSchema } from "./common";
 
-const connectEventSchema = z.object({
-    type: z.literal("connect"),
-    data: z.object({
-        sessionId: z.string().uuid(),
+const connectEventSchema = z.intersection(
+    z.object({
+        type: z.literal("connect"),
+        data: z.object({
+            sessionId: z.string().uuid(),
+        }),
     }),
-});
+    nonceEventSchema,
+);
 
-const disconnectEventSchema = z.object({
-    type: z.literal("disconnect"),
-});
+const disconnectEventSchema = z.intersection(
+    z.object({
+        type: z.literal("disconnect"),
+    }),
+    nonceEventSchema,
+);
 
 const clickGameEventSchema = z.object({
     type: z.literal("click"),
@@ -49,15 +56,18 @@ const gameStartEventSchema = z.object({
     type: z.literal("game-start"),
 });
 
-const sessionEventSchema = z.object({
-    type: z.literal("session-event"),
-    data: z.union([
-        updateSettingsSchema,
-        gameStartEventSchema,
-        chatMessageGameEventSchema,
-        gameEventSchema,
-    ]),
-});
+const sessionEventSchema = z.intersection(
+    z.object({
+        type: z.literal("session-event"),
+        data: z.union([
+            updateSettingsSchema,
+            gameStartEventSchema,
+            chatMessageGameEventSchema,
+            gameEventSchema,
+        ]),
+    }),
+    nonceEventSchema,
+);
 
 export const messageSchema = z.union([
     connectEventSchema,
