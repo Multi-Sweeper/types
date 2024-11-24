@@ -3,43 +3,46 @@
 
 import { Cell, GameSessionSettings, NonceEvent } from "./common";
 
-// Game events
+export type BoardData = {
+    id: string;
+    board: Cell[][];
+};
+
+// Board Events
 export type BoardUpdateEvent = {
-    type: "board-update";
-    data: {
-        id: string;
-        board: Cell[][];
-    };
+    type: "update";
+    data: BoardData;
 };
 
-export type GameUpdateType = BoardUpdateEvent; // add more in future
-
-// Session events
-export type SessionSettingsUpdateEvent = {
-    type: "settings-update";
-    data: GameSessionSettings;
+export type BoardEvent = {
+    type: "board-event";
+    data: BoardUpdateEvent;
 };
 
+// Game events
 export type GameStartEvent = {
-    type: "game-start";
+    type: "start";
     data: {
-        boards: {
-            id: string;
-            cells: Cell[][];
-        }[];
+        boards: BoardData[];
     };
-};
-
-export type GameUpdateEvent = {
-    type: "game-update";
-    data: GameUpdateType;
 };
 
 export type GameEndEvent = {
-    type: "game-end";
+    type: "end";
     data: {
-        boards: { id: string; board: Cell[][] }[];
+        boards: BoardData[];
     };
+};
+
+export type GameEvent = {
+    type: "game-event";
+    data: GameStartEvent | GameEndEvent | BoardEvent;
+};
+
+// Session events
+export type SettingsUpdateEvent = {
+    type: "settings-update";
+    data: GameSessionSettings;
 };
 
 export type ChatMessageEvent = {
@@ -50,12 +53,29 @@ export type ChatMessageEvent = {
     };
 };
 
-export type SessionEventType =
-    | SessionSettingsUpdateEvent
-    | GameStartEvent
-    | GameUpdateEvent
-    | GameEndEvent
-    | ChatMessageEvent;
+export type SessionEvent = {
+    type: "session-event";
+    data: SettingsUpdateEvent | ChatMessageEvent | GameEvent;
+} & NonceEvent;
+
+export type NoSessionEvent = {
+    type: "no-session";
+    data: {
+        message: string;
+    };
+};
+
+export type UnknownSessionEvent = {
+    type: "unknown-session";
+    data: {
+        message: string;
+    };
+};
+
+export type SessionErrorEvent = {
+    type: "session-error";
+    data: NoSessionEvent | UnknownSessionEvent;
+} & NonceEvent;
 
 // Server Events
 export type ServerError = {
@@ -63,13 +83,18 @@ export type ServerError = {
     data: {
         message: string;
     };
-} & NonceEvent;
+};
 
 export type InvalidMessageEvent = {
     type: "invalid-message";
     data: {
         message: string;
     };
+};
+
+export type ErrorEvent = {
+    type: "error";
+    data: ServerError | InvalidMessageEvent;
 } & NonceEvent;
 
 export type ConnectEvent = {
@@ -87,30 +112,9 @@ export type DisconnectSuccessEvent = {
     };
 } & NonceEvent;
 
-export type NoSessionEvent = {
-    type: "no-session";
-    data: {
-        message: string;
-    };
-} & NonceEvent;
-
-export type UnknownSessionEvent = {
-    type: "unknown-session";
-    data: {
-        message: string;
-    };
-} & NonceEvent;
-
-export type SessionEvent = {
-    type: "session-event";
-    data: SessionEventType;
-} & NonceEvent;
-
 export type Event =
-    | ServerError
-    | InvalidMessageEvent
+    | ErrorEvent
     | ConnectEvent
     | DisconnectSuccessEvent
-    | NoSessionEvent
-    | UnknownSessionEvent
+    | SessionErrorEvent
     | SessionEvent;
