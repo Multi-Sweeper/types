@@ -32,8 +32,8 @@ const chatMessageGameEventSchema = z.object({
     }),
 });
 
-const updateSettingsSchema = z.object({
-    type: z.literal("update-settings"),
+const settingsUpdateSchema = z.object({
+    type: z.literal("settings-update"),
     data: z.object({
         maxPlayers: z.number().int().min(1).max(4),
         maxSpectators: z.number().int().min(0).max(10),
@@ -46,7 +46,7 @@ const sessionEventSchema = z.intersection(
         type: z.literal("session-event"),
         data: z.union([
             chatMessageGameEventSchema,
-            updateSettingsSchema,
+            settingsUpdateSchema,
             gameEventSchema,
         ]),
     }),
@@ -81,7 +81,7 @@ export type ClickEvent = z.infer<typeof clickGameEventSchema>;
 export type GameStartEvent = z.infer<typeof gameStartEventSchema>;
 export type GameEvent = z.infer<typeof gameEventSchema>;
 export type ChatMessageEvent = z.infer<typeof chatMessageGameEventSchema>;
-export type UpdateSettingsEvent = z.infer<typeof updateSettingsSchema>;
+export type UpdateSettingsEvent = z.infer<typeof settingsUpdateSchema>;
 export type SessionEvent = z.infer<typeof sessionEventSchema>;
 export type ConnectEvent = z.infer<typeof connectEventSchema>;
 export type DisconnectEvent = z.infer<typeof disconnectEventSchema>;
