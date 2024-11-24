@@ -10,14 +10,7 @@ const connectEventSchema = z.intersection(
             sessionId: z.string().uuid(),
         }),
     }),
-    nonceEventSchema,
-);
-
-const disconnectEventSchema = z.intersection(
-    z.object({
-        type: z.literal("disconnect"),
-    }),
-    nonceEventSchema,
+    nonceEventSchema
 );
 
 const clickGameEventSchema = z.object({
@@ -31,16 +24,27 @@ const clickGameEventSchema = z.object({
     }),
 });
 
+const gameStartEventSchema = z.object({
+    type: z.literal("start"),
+});
+
+const gameEventSchema = z.object({
+    type: z.literal("game-event"),
+    data: z.union([clickGameEventSchema, gameStartEventSchema]),
+});
+
+const disconnectEventSchema = z.intersection(
+    z.object({
+        type: z.literal("disconnect"),
+    }),
+    nonceEventSchema
+);
+
 const chatMessageGameEventSchema = z.object({
     type: z.literal("chat-message"),
     data: z.object({
         message: z.string(),
     }),
-});
-
-const gameEventSchema = z.object({
-    type: z.literal("game-event"),
-    data: clickGameEventSchema,
 });
 
 const updateSettingsSchema = z.object({
@@ -50,10 +54,6 @@ const updateSettingsSchema = z.object({
         maxSpectators: z.number().int().min(0).max(10),
         lives: z.number().int().min(1).max(5),
     }),
-});
-
-const gameStartEventSchema = z.object({
-    type: z.literal("game-start"),
 });
 
 const sessionEventSchema = z.intersection(
@@ -66,7 +66,7 @@ const sessionEventSchema = z.intersection(
             gameEventSchema,
         ]),
     }),
-    nonceEventSchema,
+    nonceEventSchema
 );
 
 export const messageSchema = z.union([
